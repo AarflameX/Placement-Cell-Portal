@@ -1,3 +1,16 @@
-A centralized web-based platform to streamline campus placement activities by connecting three key stakeholders — students, the Training & Placement Officer (TPO), and recruiting companies. Students can view and apply to placement drives, upload/update resumes, and track application status in real time. The TPO can post job openings, shortlist candidates, schedule interviews, and manage overall placement records and analytics. Companies (through TPO-mediated access) can share job requirements and view shortlisted candidate profiles. The system aims to replace manual, email/spreadsheet-based placement coordination with a structured, transparent, and role-based workflow — improving efficiency for both students and the placement cell.
+# React + Vite
 
-The project will be managed using Agile methodology with Jira for sprint planning, backlog management, task tracking, and workflow visualization (To Do → In Progress → Review → Done) across the software development lifecycle.
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
