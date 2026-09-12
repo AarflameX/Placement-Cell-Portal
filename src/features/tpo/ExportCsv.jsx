@@ -1,16 +1,22 @@
 /**
- * SL-15: Export applicant table data to an Excel-friendly .csv file.
- * Pure client-side — no extra dependency needed.
+ * SL-15: Export shortlisted candidates to an Excel-friendly .csv file.
+ * Filters internally for status === "SHORTLISTED" so the exported
+ * file always matches the ticket's requirement, regardless of what
+ * the caller passes in.
  */
-export default function ExportCsv({ applications, filename = "applicants.csv" }) {
+export default function ExportCsv({ applications, filename = "shortlisted_candidates.csv" }) {
   const handleExport = () => {
-    if (!applications || applications.length === 0) {
-      alert("No applicant data to export.");
+    const shortlisted = (applications || []).filter(
+      (app) => app.status === "SHORTLISTED"
+    );
+
+    if (shortlisted.length === 0) {
+      alert("No shortlisted candidates to export.");
       return;
     }
 
     const headers = ["Name", "USN", "CGPA", "Branch", "Status", "Resume URL"];
-    const rows = applications.map((app) => [
+    const rows = shortlisted.map((app) => [
       app.studentName ?? "",
       app.studentUsn ?? "",
       app.studentCgpa ?? "",
@@ -21,6 +27,8 @@ export default function ExportCsv({ applications, filename = "applicants.csv" })
 
     const escapeCell = (cell) => {
       const str = String(cell);
+      // Wrap in quotes and escape internal quotes if the value contains
+      // a comma, quote, or newline — standard CSV escaping.
       if (/[",\n]/.test(str)) {
         return `"${str.replace(/"/g, '""')}"`;
       }
