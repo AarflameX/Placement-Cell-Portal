@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './features/auth/Login'
 import Register from './features/auth/Register'
+import { CreateDriveForm } from './features/drives'
 
 // --- Placeholder stub pages ----------------------------------------------
 // These exist purely so routing + guards can be exercised end-to-end
@@ -26,9 +27,6 @@ function Profile() {
 // TODO(tpo tickets): src/features/tpo/*.jsx
 function TpoDashboard() {
   return <div className="p-6">TPO Dashboard — placeholder</div>
-}
-function TpoCreateDrive() {
-  return <div className="p-6">TPO Create Drive — placeholder</div>
 }
 function TpoDriveApplicants() {
   return <div className="p-6">TPO Drive Applicants — placeholder</div>
@@ -106,7 +104,7 @@ function App() {
             path="/tpo/create-drive"
             element={
               <ProtectedRoute allowedRoles={['tpo']}>
-                <TpoCreateDrive />
+                <CreateDriveForm />
               </ProtectedRoute>
             }
           />
