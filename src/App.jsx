@@ -4,6 +4,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './features/auth/Login'
 import Register from './features/auth/Register'
 import { CreateDriveForm } from './features/drives'
+import { MyApplications } from './features/applications'
 import StudentProfile from './features/profile/StudentProfile'
 
 // --- Placeholder stub pages ----------------------------------------------
@@ -16,9 +17,8 @@ import StudentProfile from './features/profile/StudentProfile'
 function Drives() {
   return <div className="p-6">Drives (student) — placeholder</div>
 }
-function MyApplications() {
-  return <div className="p-6">My Applications — placeholder</div>
-}
+
+
 
 // TODO(tpo tickets): src/features/tpo/*.jsx
 function TpoDashboard() {
