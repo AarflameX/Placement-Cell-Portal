@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './features/auth/Login'
 import Register from './features/auth/Register'
-import { CreateDriveForm } from './features/drives'
+import { CreateDriveForm, DriveList } from './features/drives'
 
 // --- Placeholder stub pages ----------------------------------------------
 // These exist purely so routing + guards can be exercised end-to-end
@@ -11,10 +11,7 @@ import { CreateDriveForm } from './features/drives'
 // real component as its ticket ships — the route wiring below won't need
 // to change.
 
-// TODO(drives/applications tickets): src/features/drives/Drives.jsx, etc.
-function Drives() {
-  return <div className="p-6">Drives (student) — placeholder</div>
-}
+// TODO(drives/applications tickets): src/features/applications/MyApplicationsList.jsx, etc.
 function MyApplications() {
   return <div className="p-6">My Applications — placeholder</div>
 }
@@ -70,7 +67,7 @@ function App() {
             path="/drives"
             element={
               <ProtectedRoute allowedRoles={['student']}>
-                <Drives />
+                <DriveList />
               </ProtectedRoute>
             }
           />
