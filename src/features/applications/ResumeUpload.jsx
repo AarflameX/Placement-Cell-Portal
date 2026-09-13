@@ -1,5 +1,17 @@
 import { useState } from "react";
-import { Link2, CheckCircle2, AlertCircle, ExternalLink, Pencil, FileSpreadsheet } from "lucide-react";
+import { doc, updateDoc } from "firebase/firestore";
+import {
+  Link2,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink,
+  Pencil,
+  FileSpreadsheet,
+  Loader2,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { db } from "../../services/firebase";
+import { COLLECTIONS } from "../../types/schema";
 
 /**
  * Central resume-links Google Doc. Maintained manually by the team — this
@@ -33,12 +45,24 @@ export function validateResumeUrl(url) {
   return { isValid: true, error: null };
 }
 
-export default function ResumeUpload() {
-  const [urlInput, setUrlInput] = useState("");
-  const [validationError, setValidationError] = useState(null);
-  const [savedUrl, setSavedUrl] = useState(null);
+/**
+ * @param {Object} props
+ * @param {string} [props.initialUrl] - Existing resumeUrl from the student's
+ *   Firestore profile, if any. Pre-populates the input AND the saved/confirmed
+ *   view on first mount only — later edits are never overwritten by this prop.
+ */
+export default function ResumeUpload({ initialUrl = "" }) {
+  const { currentUser, refreshUserProfile } = useAuth();
 
-  function handleSave() {
+  const [urlInput, setUrlInput] = useState(initialUrl);
+  const [validationError, setValidationError] = useState(null);
+  // A previously-saved link (from Firestore, via initialUrl) counts as
+  // already saved, so returning students land straight on the confirmed view.
+  const [savedUrl, setSavedUrl] = useState(initialUrl || null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+
+  async function handleSave() {
     const { isValid, error } = validateResumeUrl(urlInput);
     if (!isValid) {
       setValidationError(error);
@@ -46,13 +70,38 @@ export default function ResumeUpload() {
       return;
     }
     setValidationError(null);
-    setSavedUrl(urlInput.trim());
+    setSubmitError(null);
+
+    if (!currentUser?.uid) {
+      setSubmitError("You need to be logged in to save your resume link.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const trimmedUrl = urlInput.trim();
+      const userDocRef = doc(db, COLLECTIONS.USERS, currentUser.uid);
+      // updateDoc only touches the field(s) passed in — name, email, role,
+      // usn, branch, cgpa, and everything else on the profile are untouched.
+      await updateDoc(userDocRef, { resumeUrl: trimmedUrl });
+
+      // Let AuthContext's userProfile reflect the new link immediately.
+      await refreshUserProfile?.();
+
+      setSavedUrl(trimmedUrl);
+    } catch (err) {
+      console.error("Failed to save resume link:", err);
+      setSubmitError("Couldn't save your resume link. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   function handleEdit() {
     setUrlInput(savedUrl ?? "");
     setSavedUrl(null);
     setValidationError(null);
+    setSubmitError(null);
   }
 
   return (
@@ -86,6 +135,13 @@ export default function ResumeUpload() {
           </div>
         </div>
 
+        {submitError && (
+          <p className="mb-3 flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            {submitError}
+          </p>
+        )}
+
         {!savedUrl ? (
           <>
             <label htmlFor="resume-url" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -100,15 +156,17 @@ export default function ResumeUpload() {
                 type="url"
                 inputMode="url"
                 value={urlInput}
+                disabled={isSaving}
                 onChange={(e) => {
                   setUrlInput(e.target.value);
                   if (validationError) setValidationError(null);
+                  if (submitError) setSubmitError(null);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSave();
                 }}
                 placeholder="https://drive.google.com/file/d/..."
-                className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:bg-gray-50 disabled:text-gray-500 ${
                   validationError
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 focus:border-blue-600"
@@ -126,9 +184,17 @@ export default function ResumeUpload() {
             <button
               type="button"
               onClick={handleSave}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              disabled={isSaving}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400"
             >
-              Save Resume Link
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Resume Link"
+              )}
             </button>
           </>
         ) : (
