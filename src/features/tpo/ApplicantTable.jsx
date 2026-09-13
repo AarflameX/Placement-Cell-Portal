@@ -63,10 +63,10 @@ export default function ApplicantTable() {
               <td className="px-4 py-2">{app.studentName}</td>
               <td className="px-4 py-2">{app.studentUsn}</td>
               <td className="px-4 py-2">{app.studentCgpa}</td>
-              <td className="px-4 py-2">{app.branch}</td>
+              <td className="px-4 py-2">{app.studentBranch || app.branch || "N/A"}</td>
               <td className="px-4 py-2">
                 {app.resumeUrl ? (
-
+                  <a
                     href={app.resumeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
