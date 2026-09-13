@@ -4,6 +4,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './features/auth/Login'
 import Register from './features/auth/Register'
 import { CreateDriveForm } from './features/drives'
+import StudentProfile from './features/profile/StudentProfile'
 
 // --- Placeholder stub pages ----------------------------------------------
 // These exist purely so routing + guards can be exercised end-to-end
@@ -17,11 +18,6 @@ function Drives() {
 }
 function MyApplications() {
   return <div className="p-6">My Applications — placeholder</div>
-}
-
-// TODO(SL-x, Dev1/Profile): src/features/profile/Profile.jsx
-function Profile() {
-  return <div className="p-6">Profile — placeholder</div>
 }
 
 // TODO(tpo tickets): src/features/tpo/*.jsx
@@ -86,7 +82,7 @@ function App() {
             path="/profile"
             element={
               <ProtectedRoute allowedRoles={['student']}>
-                <Profile />
+                <StudentProfile />
               </ProtectedRoute>
             }
           />
