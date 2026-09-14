@@ -3,23 +3,13 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './features/auth/Login'
 import Register from './features/auth/Register'
-import { CreateDriveForm } from './features/drives'
+import { CreateDriveForm, DriveList } from './features/drives'
 import { MyApplications } from './features/applications'
 import StudentProfile from './features/profile/StudentProfile'
 import AnalyticsCards from './features/tpo/AnalyticsCards'
 import ApplicantTable from './features/tpo/ApplicantTable'
 
-// --- Placeholder stub pages ----------------------------------------------
-// These exist purely so routing + guards can be exercised end-to-end
-// before the real feature components land. Swap each import out for the
-// real component as its ticket ships — the route wiring below won't need
-// to change.
 
-// TODO(drives/applications tickets): src/features/drives/Drives.jsx, etc.
-function Drives() {
-  return <div className="p-6">Drives (student) — placeholder</div>
-}
-// --------------------------------------------------------------------------
 
 // Sends "/" to the right place based on auth + role, once loading resolves.
 function RootRedirect() {
@@ -58,7 +48,7 @@ function App() {
             path="/drives"
             element={
               <ProtectedRoute allowedRoles={['student']}>
-                <Drives />
+                <DriveList />
               </ProtectedRoute>
             }
           />
