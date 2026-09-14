@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Login from './features/auth/Login'
 import Register from './features/auth/Register'
-import { CreateDriveForm } from './features/drives'
+import { CreateDriveForm, DriveList } from './features/drives'
 import { MyApplications } from './features/applications'
 import StudentProfile from './features/profile/StudentProfile'
 
@@ -12,11 +12,6 @@ import StudentProfile from './features/profile/StudentProfile'
 // before the real feature components land. Swap each import out for the
 // real component as its ticket ships — the route wiring below won't need
 // to change.
-
-// TODO(drives/applications tickets): src/features/drives/Drives.jsx, etc.
-function Drives() {
-  return <div className="p-6">Drives (student) — placeholder</div>
-}
 
 
 
@@ -66,7 +61,7 @@ function App() {
             path="/drives"
             element={
               <ProtectedRoute allowedRoles={['student']}>
-                <Drives />
+                <DriveList />
               </ProtectedRoute>
             }
           />
