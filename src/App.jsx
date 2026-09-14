@@ -6,6 +6,8 @@ import Register from './features/auth/Register'
 import { CreateDriveForm } from './features/drives'
 import { MyApplications } from './features/applications'
 import StudentProfile from './features/profile/StudentProfile'
+import AnalyticsCards from './features/tpo/AnalyticsCards'
+import ApplicantTable from './features/tpo/ApplicantTable'
 
 // --- Placeholder stub pages ----------------------------------------------
 // These exist purely so routing + guards can be exercised end-to-end
@@ -16,16 +18,6 @@ import StudentProfile from './features/profile/StudentProfile'
 // TODO(drives/applications tickets): src/features/drives/Drives.jsx, etc.
 function Drives() {
   return <div className="p-6">Drives (student) — placeholder</div>
-}
-
-
-
-// TODO(tpo tickets): src/features/tpo/*.jsx
-function TpoDashboard() {
-  return <div className="p-6">TPO Dashboard — placeholder</div>
-}
-function TpoDriveApplicants() {
-  return <div className="p-6">TPO Drive Applicants — placeholder</div>
 }
 // --------------------------------------------------------------------------
 
@@ -92,7 +84,7 @@ function App() {
             path="/tpo/dashboard"
             element={
               <ProtectedRoute allowedRoles={['tpo']}>
-                <TpoDashboard />
+                <AnalyticsCards />
               </ProtectedRoute>
             }
           />
@@ -108,7 +100,7 @@ function App() {
             path="/tpo/drives/:jobId/applicants"
             element={
               <ProtectedRoute allowedRoles={['tpo']}>
-                <TpoDriveApplicants />
+                <ApplicantTable />
               </ProtectedRoute>
             }
           />
