@@ -167,32 +167,32 @@ export default function CreateDriveForm() {
     .slice(0, 16);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-neutral-50 dark:bg-[#09090b] py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
         {/* Navigation / Header */}
         <div className="mb-6 flex items-center justify-between">
           <Link
             to="/tpo/dashboard"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Link>
-          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+          <span className="rounded-full bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
             TPO Portal
           </span>
         </div>
 
         {/* Success Banner */}
         {successInfo && (
-          <div className="mb-8 rounded-xl border border-green-200 bg-green-50 p-6 shadow-sm">
+          <div className="mb-8 rounded-xl border border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/30 p-6 shadow-xs">
             <div className="flex items-start gap-4">
-              <CheckCircle2 className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
+              <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="text-base font-semibold text-green-900">
+                <h3 className="text-base font-semibold text-green-900 dark:text-green-100">
                   Placement Drive Posted Successfully!
                 </h3>
-                <p className="mt-1 text-sm text-green-700">
+                <p className="mt-1 text-sm text-green-700 dark:text-green-300">
                   The recruitment drive for{" "}
                   <span className="font-semibold">{successInfo.companyName}</span> ({successInfo.role})
                   has been published to the students&apos; feed.
@@ -201,7 +201,7 @@ export default function CreateDriveForm() {
                   <button
                     type="button"
                     onClick={() => setSuccessInfo(null)}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-green-700 transition-colors cursor-pointer"
                   >
                     <Plus className="h-4 w-4" />
                     Post Another Drive
@@ -209,7 +209,7 @@ export default function CreateDriveForm() {
                   <button
                     type="button"
                     onClick={() => navigate("/tpo/dashboard")}
-                    className="inline-flex items-center rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-800 hover:bg-green-100 transition-colors"
+                    className="inline-flex items-center rounded-lg border border-green-300 dark:border-green-800 bg-white dark:bg-neutral-800 px-4 py-2 text-sm font-medium text-green-800 dark:text-green-300 hover:bg-green-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                   >
                     View All Drives
                   </button>
@@ -220,12 +220,12 @@ export default function CreateDriveForm() {
         )}
 
         {/* Main Card */}
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-          <div className="border-b border-gray-200 bg-white px-6 py-5 sm:px-8">
-            <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
+        <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#121215] shadow-xs overflow-hidden">
+          <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#121215] px-6 py-5 sm:px-8">
+            <h1 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 sm:text-2xl">
               Post Placement Drive
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               Fill out the details below to announce a new campus recruitment drive. Eligible students will be notified.
             </p>
           </div>
@@ -233,11 +233,11 @@ export default function CreateDriveForm() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
             {submitError && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 flex items-start gap-3">
+              <div className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30 p-4 text-sm text-red-700 dark:text-red-400 flex items-start gap-3">
                 <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium">Could not create placement drive</p>
-                  <p className="mt-0.5 text-xs text-red-600">{submitError}</p>
+                  <p className="mt-0.5 text-xs text-red-600 dark:text-red-400">{submitError}</p>
                 </div>
               </div>
             )}
@@ -248,13 +248,13 @@ export default function CreateDriveForm() {
               <div id="field-companyName">
                 <label
                   htmlFor="companyName"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                 >
                   Company Name <span className="text-red-500">*</span>
                 </label>
-                <div className="relative rounded-lg shadow-sm">
+                <div className="relative rounded-lg shadow-xs">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Building2 className="h-4 w-4 text-gray-400" />
+                    <Building2 className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                   </div>
                   <input
                     type="text"
@@ -264,15 +264,15 @@ export default function CreateDriveForm() {
                     onChange={handleChange}
                     onBlur={() => handleBlur("companyName")}
                     placeholder="e.g. Google, Microsoft, Infosys"
-                    className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                    className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                       touched.companyName && errors.companyName
-                        ? "border-red-300 focus:ring-red-500"
-                        : "border-gray-300 focus:border-blue-600"
+                        ? "border-red-300 dark:border-red-800 focus:ring-red-500"
+                        : "border-neutral-300 dark:border-neutral-700 focus:border-blue-600"
                     }`}
                   />
                 </div>
                 {touched.companyName && errors.companyName && (
-                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                     <AlertCircle className="h-3.5 w-3.5" />
                     {errors.companyName}
                   </p>
@@ -283,13 +283,13 @@ export default function CreateDriveForm() {
               <div id="field-role">
                 <label
                   htmlFor="role"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                 >
                   Job Role / Designation <span className="text-red-500">*</span>
                 </label>
-                <div className="relative rounded-lg shadow-sm">
+                <div className="relative rounded-lg shadow-xs">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Briefcase className="h-4 w-4 text-gray-400" />
+                    <Briefcase className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                   </div>
                   <input
                     type="text"
@@ -299,15 +299,15 @@ export default function CreateDriveForm() {
                     onChange={handleChange}
                     onBlur={() => handleBlur("role")}
                     placeholder="e.g. Software Development Engineer"
-                    className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                    className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                       touched.role && errors.role
-                        ? "border-red-300 focus:ring-red-500"
-                        : "border-gray-300 focus:border-blue-600"
+                        ? "border-red-300 dark:border-red-800 focus:ring-red-500"
+                        : "border-neutral-300 dark:border-neutral-700 focus:border-blue-600"
                     }`}
                   />
                 </div>
                 {touched.role && errors.role && (
-                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                     <AlertCircle className="h-3.5 w-3.5" />
                     {errors.role}
                   </p>
@@ -321,11 +321,11 @@ export default function CreateDriveForm() {
               <div id="field-ctc">
                 <label
                   htmlFor="ctc"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                 >
                   Package / CTC (in LPA) <span className="text-red-500">*</span>
                 </label>
-                <div className="relative rounded-lg shadow-sm">
+                <div className="relative rounded-lg shadow-xs">
                   <input
                     type="number"
                     id="ctc"
@@ -337,18 +337,18 @@ export default function CreateDriveForm() {
                     onChange={handleChange}
                     onBlur={() => handleBlur("ctc")}
                     placeholder="e.g. 18.5"
-                    className={`block w-full rounded-lg border px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                    className={`block w-full rounded-lg border px-3 py-2.5 text-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                       touched.ctc && errors.ctc
-                        ? "border-red-300 focus:ring-red-500"
-                        : "border-gray-300 focus:border-blue-600"
+                        ? "border-red-300 dark:border-red-800 focus:ring-red-500"
+                        : "border-neutral-300 dark:border-neutral-700 focus:border-blue-600"
                     }`}
                   />
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span className="text-xs font-semibold text-gray-500">LPA</span>
+                    <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">LPA</span>
                   </div>
                 </div>
                 {touched.ctc && errors.ctc && (
-                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                     <AlertCircle className="h-3.5 w-3.5" />
                     {errors.ctc}
                   </p>
@@ -359,13 +359,13 @@ export default function CreateDriveForm() {
               <div id="field-minCgpa">
                 <label
                   htmlFor="minCgpa"
-                  className="block text-sm font-medium text-gray-700 mb-1.5"
+                  className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
                 >
                   Minimum CGPA Cutoff <span className="text-red-500">*</span>
                 </label>
-                <div className="relative rounded-lg shadow-sm">
+                <div className="relative rounded-lg shadow-xs">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <GraduationCap className="h-4 w-4 text-gray-400" />
+                    <GraduationCap className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                   </div>
                   <input
                     type="number"
@@ -378,18 +378,18 @@ export default function CreateDriveForm() {
                     onChange={handleChange}
                     onBlur={() => handleBlur("minCgpa")}
                     placeholder="e.g. 7.50"
-                    className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                    className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                       touched.minCgpa && errors.minCgpa
-                        ? "border-red-300 focus:ring-red-500"
-                        : "border-gray-300 focus:border-blue-600"
+                        ? "border-red-300 dark:border-red-800 focus:ring-red-500"
+                        : "border-neutral-300 dark:border-neutral-700 focus:border-blue-600"
                     }`}
                   />
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <span className="text-xs font-semibold text-gray-400">/ 10.0</span>
+                    <span className="text-xs font-semibold text-neutral-400 dark:text-neutral-500">/ 10.0</span>
                   </div>
                 </div>
                 {touched.minCgpa && errors.minCgpa && (
-                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                  <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                     <AlertCircle className="h-3.5 w-3.5" />
                     {errors.minCgpa}
                   </p>
@@ -400,22 +400,22 @@ export default function CreateDriveForm() {
             {/* Row 3: Eligible Branches Multi-Select */}
             <div id="field-eligibleBranches" className="pt-2">
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
                   Eligible Branches <span className="text-red-500">*</span>
                 </label>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={selectAllBranches}
-                    className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors cursor-pointer"
                   >
                     Select All
                   </button>
-                  <span className="text-gray-300">|</span>
+                  <span className="text-neutral-300 dark:text-neutral-700">|</span>
                   <button
                     type="button"
                     onClick={clearAllBranches}
-                    className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                    className="text-xs font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors cursor-pointer"
                   >
                     Clear
                   </button>
@@ -430,18 +430,18 @@ export default function CreateDriveForm() {
                       type="button"
                       key={b.id}
                       onClick={() => toggleBranch(b.id)}
-                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
+                      className={`flex items-center justify-between rounded-lg border px-3 py-2 text-xs font-medium transition-all cursor-pointer ${
                         isSelected
-                          ? "border-blue-600 bg-blue-50 text-blue-700 shadow-xs"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-blue-600 dark:border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-xs"
+                          : "border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/40 text-neutral-700 dark:text-neutral-300 hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/40"
                       }`}
                       title={b.name}
                     >
                       <span>{b.id}</span>
                       {isSelected ? (
-                        <Check className="h-3.5 w-3.5 text-blue-600" />
+                        <Check className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                       ) : (
-                        <span className="h-3.5 w-3.5 rounded-full border border-gray-300" />
+                        <span className="h-3.5 w-3.5 rounded-full border border-neutral-300 dark:border-neutral-700" />
                       )}
                     </button>
                   );
@@ -449,7 +449,7 @@ export default function CreateDriveForm() {
               </div>
 
               {touched.eligibleBranches && errors.eligibleBranches && (
-                <p className="mt-2 text-xs text-red-600 flex items-center gap-1">
+                <p className="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                   <AlertCircle className="h-3.5 w-3.5" />
                   {errors.eligibleBranches}
                 </p>
@@ -460,13 +460,13 @@ export default function CreateDriveForm() {
             <div id="field-deadline" className="pt-2">
               <label
                 htmlFor="deadline"
-                className="block text-sm font-medium text-gray-700 mb-1.5"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
               >
                 Application Deadline <span className="text-red-500">*</span>
               </label>
-              <div className="relative rounded-lg shadow-sm sm:max-w-md">
+              <div className="relative rounded-lg shadow-xs sm:max-w-md">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Calendar className="h-4 w-4 text-gray-400" />
+                  <Calendar className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
                 </div>
                 <input
                   type="datetime-local"
@@ -476,18 +476,18 @@ export default function CreateDriveForm() {
                   value={formData.deadline}
                   onChange={handleChange}
                   onBlur={() => handleBlur("deadline")}
-                  className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  className={`block w-full rounded-lg border pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                     touched.deadline && errors.deadline
-                      ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 focus:border-blue-600"
+                      ? "border-red-300 dark:border-red-800 focus:ring-red-500"
+                      : "border-neutral-300 dark:border-neutral-700 focus:border-blue-600"
                   }`}
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 Students will not be able to submit applications after this time.
               </p>
               {touched.deadline && errors.deadline && (
-                <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                <p className="mt-1.5 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
                   <AlertCircle className="h-3.5 w-3.5" />
                   {errors.deadline}
                 </p>
@@ -498,12 +498,12 @@ export default function CreateDriveForm() {
             <div id="field-description" className="pt-2">
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-1.5"
+                className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5"
               >
                 Job Description & Requirements{" "}
-                <span className="text-xs font-normal text-gray-500">(Optional)</span>
+                <span className="text-xs font-normal text-neutral-500 dark:text-neutral-400">(Optional)</span>
               </label>
-              <div className="relative rounded-lg shadow-sm">
+              <div className="relative rounded-lg shadow-xs">
                 <textarea
                   id="description"
                   name="description"
@@ -511,25 +511,25 @@ export default function CreateDriveForm() {
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Enter job roles, selection rounds (Online Test, Tech Interview, HR), bond details, or work locations..."
-                  className="block w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="block w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-3 text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
             </div>
 
             {/* Submit & Cancel Buttons */}
-            <div className="pt-4 border-t border-gray-200 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
+            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => navigate("/tpo/dashboard")}
                 disabled={submitting}
-                className="w-full sm:w-auto rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50 transition-colors"
+                className="w-full sm:w-auto rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800/80 px-5 py-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 focus:outline-none focus:ring-2 focus:ring-neutral-400 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-neutral-900 text-white dark:bg-white dark:text-black px-6 py-2.5 text-sm font-medium shadow-xs hover:opacity-90 active:scale-98 disabled:opacity-50 transition-all cursor-pointer"
               >
                 {submitting ? (
                   <>
