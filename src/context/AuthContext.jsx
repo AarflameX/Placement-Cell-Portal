@@ -5,7 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { auth, db } from '../services/firebase'
 import { COLLECTIONS } from '../types/schema'
 import { signInWithGoogle } from '../features/auth/googleAuth'
@@ -40,27 +40,51 @@ export function AuthProvider({ children }) {
         const profileData = userDocSnap.data()
         setUserProfile(profileData)
         setUserRole(profileData.role ?? null)
+        return profileData
       } else {
-        // Auth account exists but no Firestore profile yet — e.g. the
-        // Firestore write from Register.jsx hasn't landed, or the user
-        // signed up with Google and profile creation is still pending.
         setUserProfile(null)
         setUserRole(null)
+        return null
       }
     } catch (error) {
       console.error('AuthContext: failed to fetch user profile:', error)
       setUserProfile(null)
       setUserRole(null)
+      return null
     }
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeDoc = null
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       setLoading(true)
+
+      if (unsubscribeDoc) {
+        unsubscribeDoc()
+        unsubscribeDoc = null
+      }
 
       if (user) {
         setCurrentUser(user)
+        // Initial fetch
         await fetchUserProfile(user.uid)
+
+        // Real-time listener for any profile updates across the app
+        const userDocRef = doc(db, COLLECTIONS.USERS, user.uid)
+        unsubscribeDoc = onSnapshot(
+          userDocRef,
+          (docSnap) => {
+            if (docSnap.exists()) {
+              const profileData = docSnap.data()
+              setUserProfile(profileData)
+              setUserRole(profileData.role ?? null)
+            }
+          },
+          (error) => {
+            console.error('AuthContext user snapshot error:', error)
+          }
+        )
       } else {
         setCurrentUser(null)
         setUserProfile(null)
@@ -70,7 +94,12 @@ export function AuthProvider({ children }) {
       setLoading(false)
     })
 
-    return unsubscribe
+    return () => {
+      unsubscribeAuth()
+      if (unsubscribeDoc) {
+        unsubscribeDoc()
+      }
+    }
   }, [])
 
   async function login(email, password) {
@@ -85,20 +114,17 @@ export function AuthProvider({ children }) {
     return signOut(auth)
   }
 
-  // Delegates to features/auth/googleAuth.js, which handles the popup AND
-  // creates the users/{uid} profile doc on a brand-new Google sign-in.
-  // onAuthStateChanged above will pick up the resulting auth + profile
-  // state automatically; the returned role is handed back too in case a
-  // caller wants to redirect immediately without waiting on that listener.
-  async function loginWithGoogle(defaultRole = 'student') {
-    return signInWithGoogle(defaultRole)
+  async function loginWithGoogle(mode = 'login', role = 'student') {
+    return signInWithGoogle(mode, role)
   }
 
   // Lets pages re-pull the profile after e.g. onboarding writes a role.
-  async function refreshUserProfile() {
-    if (currentUser) {
-      await fetchUserProfile(currentUser.uid)
+  async function refreshUserProfile(targetUid = null) {
+    const uid = targetUid || auth.currentUser?.uid || currentUser?.uid
+    if (uid) {
+      return await fetchUserProfile(uid)
     }
+    return null
   }
 
   const value = {
