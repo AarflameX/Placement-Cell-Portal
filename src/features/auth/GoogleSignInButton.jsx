@@ -28,10 +28,10 @@ export default function GoogleSignInButton({ onClick, disabled, label = 'Continu
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white text-gray-700 text-sm font-medium py-2 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
+      className="w-full flex items-center justify-center gap-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-200 text-sm font-medium py-2.5 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all"
     >
       <GoogleIcon />
-      {label}
+      <span>{label}</span>
     </button>
   );
 }

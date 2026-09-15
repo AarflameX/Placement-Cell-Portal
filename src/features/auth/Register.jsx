@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../../services/firebase';
 import { COLLECTIONS } from '../../types/schema';
+import { useAuth } from '../../context/AuthContext';
 import { getAuthErrorMessage } from './authErrors';
 import { signInWithGoogle } from './googleAuth';
 import GoogleSignInButton from './GoogleSignInButton';
+import { NoiseBackground } from '../../components/ui/noise-background';
+import { SmoothCaretInput } from '../../components/ui/smooth-caret-input';
 
 const ROLES = [
   { value: 'student', label: 'Student' },
@@ -17,6 +20,7 @@ const MIN_PASSWORD_LENGTH = 6;
 
 export default function Register() {
   const navigate = useNavigate();
+  const { currentUser, userRole, loading: authLoading, refreshUserProfile } = useAuth();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -26,6 +30,17 @@ export default function Register() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Auto-redirect if already logged in with a valid role
+  useEffect(() => {
+    if (!authLoading && currentUser && userRole) {
+      if (userRole === 'tpo') {
+        navigate('/tpo/dashboard', { replace: true });
+      } else {
+        navigate('/drives', { replace: true });
+      }
+    }
+  }, [currentUser, userRole, authLoading, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,8 +93,10 @@ export default function Register() {
         createdAt: new Date(),
       });
 
-      // 3. User is auto-signed-in by createUserWithEmailAndPassword.
-      // Redirect straight into the app based on role, matching Login's behavior.
+      // 3. Sync profile into AuthContext before routing
+      await refreshUserProfile(uid);
+
+      // 4. Auto-sign-in redirect
       if (role === 'tpo') {
         navigate('/tpo/dashboard');
       } else {
@@ -96,13 +113,11 @@ export default function Register() {
     setError('');
     setLoading(true);
     try {
-      // Uses whatever role is currently selected in the dropdown as the
-      // default for a brand-new profile. If this Google account already
-      // has a profile (e.g. they're re-registering by mistake), their
-      // existing role wins instead.
-      const role = await signInWithGoogle(formData.role);
+      // Register with the selected role
+      const result = await signInWithGoogle('register', formData.role);
+      await refreshUserProfile(result.uid);
 
-      if (role === 'tpo') {
+      if (result.role === 'tpo') {
         navigate('/tpo/dashboard');
       } else {
         navigate('/drives');
@@ -115,15 +130,23 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow p-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-1">Create an account</h1>
-        <p className="text-sm text-gray-500 mb-6">Join the Placement Cell Portal</p>
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-neutral-50 dark:bg-[#09090b] px-4 py-12">
+      <NoiseBackground
+        borderWidth="p-[6px]"
+        containerClassName="w-full max-w-md shadow-xs"
+        innerClassName="bg-white dark:bg-[#121215] p-8 sm:p-9"
+      >
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50 mb-1">
+          Create an account
+        </h1>
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
+          Join the Placement Cell Portal
+        </p>
 
         {error && (
           <div
             role="alert"
-            className="mb-4 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2"
+            className="mb-5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-300 text-sm px-4 py-3"
           >
             {error}
           </div>
@@ -131,10 +154,10 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="fullName" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
               Full Name
             </label>
-            <input
+            <SmoothCaretInput
               id="fullName"
               name="fullName"
               type="text"
@@ -142,16 +165,15 @@ export default function Register() {
               value={formData.fullName}
               onChange={handleChange}
               disabled={loading}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               placeholder="Jane Doe"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
               Email
             </label>
-            <input
+            <SmoothCaretInput
               id="email"
               name="email"
               type="email"
@@ -159,16 +181,15 @@ export default function Register() {
               value={formData.email}
               onChange={handleChange}
               disabled={loading}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               placeholder="jane@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
               Password
             </label>
-            <input
+            <SmoothCaretInput
               id="password"
               name="password"
               type="password"
@@ -176,13 +197,12 @@ export default function Register() {
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
               placeholder="At least 6 characters"
             />
           </div>
 
           <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="role" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
               I am a
             </label>
             <select
@@ -191,10 +211,10 @@ export default function Register() {
               value={formData.role}
               onChange={handleChange}
               disabled={loading}
-              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              className="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3.5 py-2.5 text-sm text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-neutral-400 disabled:opacity-50 transition-all"
             >
               {ROLES.map((r) => (
-                <option key={r.value} value={r.value}>
+                <option key={r.value} value={r.value} className="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
                   {r.label}
                 </option>
               ))}
@@ -204,30 +224,30 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-blue-600 text-white text-sm font-medium py-2 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+            className="w-full rounded-xl bg-neutral-900 text-white dark:bg-white dark:text-black text-sm font-medium py-2.5 shadow-xs hover:opacity-90 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer mt-2"
           >
-            {loading ? 'Loading...' : 'Create Account'}
+            {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
 
         <div className="flex items-center gap-3 my-5">
-          <div className="h-px flex-1 bg-gray-200" />
-          <span className="text-xs text-gray-400">OR</span>
-          <div className="h-px flex-1 bg-gray-200" />
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+          <span className="text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500">OR</span>
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
         </div>
 
         <GoogleSignInButton onClick={handleGoogleSignIn} disabled={loading} />
-        <p className="mt-2 text-xs text-gray-400 text-center">
-          Signs you up as {formData.role === 'tpo' ? 'TPO' : 'Student'} — change the dropdown above first if that's wrong.
+        <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400 text-center">
+          Signs you up as <span className="font-semibold text-neutral-700 dark:text-neutral-300">{formData.role === 'tpo' ? 'TPO' : 'Student'}</span> — change the dropdown above if needed.
         </p>
 
-        <p className="mt-4 text-sm text-gray-500 text-center">
+        <p className="mt-4 text-sm text-neutral-500 dark:text-neutral-400 text-center">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link to="/login" className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
             Log in
           </Link>
         </p>
-      </div>
+      </NoiseBackground>
     </div>
   );
 }
