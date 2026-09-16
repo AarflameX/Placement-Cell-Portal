@@ -1,121 +1,112 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
+import ProtectedRoute from './components/layout/ProtectedRoute'
+import Login from './features/auth/Login'
+import Register from './features/auth/Register'
+import Navbar from './components/layout/Navbar'
+import { CreateDriveForm, DriveList } from './features/drives'
+import { MyApplications } from './features/applications'
+import StudentProfile from './features/profile/StudentProfile'
+import TpoDashboard from './features/tpo/TpoDashboard'
+import ApplicantTable from './features/tpo/ApplicantTable'
+
+// Sends "/" to the right place based on auth + role, once loading resolves.
+function RootRedirect() {
+  const { currentUser, userRole, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-neutral-50 dark:bg-[#09090b]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-300 dark:border-neutral-700 border-t-blue-600 dark:border-t-blue-500" />
+      </div>
+    )
+  }
+
+  if (!currentUser) return <Navigate to="/login" replace />
+  if (userRole === 'tpo') return <Navigate to="/tpo/dashboard" replace />
+  if (userRole === 'student') return <Navigate to="/drives" replace />
+
+  // Signed in but role hasn't resolved (e.g. missing Firestore profile) —
+  // send back to login rather than looping on an unroutable state.
+  return <Navigate to="/login" replace />
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <div className="min-h-screen bg-neutral-50 dark:bg-[#09090b] text-neutral-900 dark:text-neutral-100 flex flex-col transition-colors duration-150">
+            <Navbar />
+            <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<RootRedirect />} />
 
-      <div className="ticks"></div>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+              {/* Student protected routes */}
+              <Route
+                path="/drives"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <DriveList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-applications"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <MyApplications />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <StudentProfile />
+                  </ProtectedRoute>
+                }
+              />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+              {/* TPO protected routes */}
+              <Route
+                path="/tpo/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['tpo']}>
+                    <TpoDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tpo/create-drive"
+                element={
+                  <ProtectedRoute allowedRoles={['tpo']}>
+                    <CreateDriveForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/tpo/drives/:jobId/applicants"
+                element={
+                  <ProtectedRoute allowedRoles={['tpo']}>
+                    <ApplicantTable />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Unknown paths fall back through RootRedirect's role logic */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

@@ -1,1 +1,1 @@
-
+Web based platform connecting students TPO, recruiters to streamline campus placement student apply to drives and track status TPO posts openings and shortlists candidates, all replacing manual spreadsheet/email coordination Managed with Agile methodology with Jira for sprint planning backlog and workflow tracking (To Do → In Prog → Review → Done)
