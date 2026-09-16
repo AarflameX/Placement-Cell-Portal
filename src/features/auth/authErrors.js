@@ -6,6 +6,8 @@ export function getAuthErrorMessage(error) {
   const code = error?.code || '';
 
   switch (code) {
+    case 'custom/no-account-found':
+      return 'No account found with this Google email. Please create an account on the sign-up page first.';
     case 'auth/email-already-in-use':
       return 'An account with this email already exists. Try logging in instead.';
     case 'auth/invalid-email':

@@ -185,7 +185,9 @@ export function checkStudentEligibility(studentProfile, job) {
   const eligibleBranches = Array.isArray(job?.eligibleBranches)
     ? job.eligibleBranches.map((b) => String(b).toUpperCase().trim())
     : [];
-  const meetsBranch = hasBranch && eligibleBranches.includes(studentBranch);
+  const meetsBranch =
+    hasBranch &&
+    (eligibleBranches.length === 0 || eligibleBranches.includes(studentBranch));
 
   if (meetsCgpa && meetsBranch) {
     return {

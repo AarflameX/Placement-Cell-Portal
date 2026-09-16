@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   collection,
   query,
@@ -17,6 +18,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../services/firebase";
 import { COLLECTIONS } from "../../types/schema";
+import { checkStudentEligibility } from "../drives/driveService";
 
 /**
  * SL-10: Apply Now.
@@ -113,9 +115,21 @@ export default function ApplicationButton({ job }) {
       setMessage("Your profile hasn't finished loading. Please try again in a moment.");
       return;
     }
+    if (!userProfile.usn?.trim() || !userProfile.branch?.trim() || !userProfile.cgpa) {
+      setStatus("blocked");
+      setMessage("Please complete your profile (USN, Branch, CGPA) before applying.");
+      return;
+    }
     if (!userProfile.resumeUrl) {
       setStatus("blocked");
       setMessage("Add a resume link on your profile before applying.");
+      return;
+    }
+
+    const eligibility = checkStudentEligibility(userProfile, job);
+    if (!eligibility.isEligible) {
+      setStatus("blocked");
+      setMessage(eligibility.message);
       return;
     }
 
@@ -134,11 +148,15 @@ export default function ApplicationButton({ job }) {
 
       await addDoc(collection(db, COLLECTIONS.APPLICATIONS), {
         jobId: job.id,
+        companyName: job.companyName || "",
+        role: job.role || "",
         studentId: currentUser.uid,
-        studentName: userProfile.name,
-        studentUsn: userProfile.usn,
-        studentCgpa: userProfile.cgpa,
-        resumeUrl: userProfile.resumeUrl,
+        studentName: userProfile.name || "",
+        studentUsn: userProfile.usn || "",
+        studentCgpa: userProfile.cgpa || 0,
+        studentBranch: userProfile.branch || "",
+        branch: userProfile.branch || "",
+        resumeUrl: userProfile.resumeUrl || "",
         status: "APPLIED",
         appliedAt: serverTimestamp(),
       });
@@ -160,12 +178,12 @@ export default function ApplicationButton({ job }) {
         type="button"
         onClick={handleApply}
         disabled={isBusy || status === "applied" || status === "blocked"}
-        className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+        className={`inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium shadow-xs transition-all ${
           status === "applied"
-            ? "bg-green-100 text-green-700 cursor-default"
+            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/50 cursor-default"
             : status === "blocked"
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-            : "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-400"
+            ? "bg-neutral-100 dark:bg-neutral-800/80 text-neutral-400 dark:text-neutral-500 border border-neutral-200 dark:border-neutral-700/50 cursor-not-allowed"
+            : "bg-neutral-900 text-white dark:bg-white dark:text-black hover:opacity-90 active:scale-98 cursor-pointer"
         }`}
       >
         {status === "checking" && (
@@ -182,7 +200,7 @@ export default function ApplicationButton({ job }) {
         )}
         {status === "applied" && (
           <>
-            <CheckCircle2 className="h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             Applied
           </>
         )}
@@ -195,19 +213,29 @@ export default function ApplicationButton({ job }) {
       </button>
 
       {message && status === "applied" && (
-        <p className="flex items-center gap-1 text-xs text-green-700">
+        <p className="flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-400">
           <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
           {message}
         </p>
       )}
       {message && status === "blocked" && (
-        <p className="flex items-center gap-1 text-xs text-amber-700">
-          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-          {message}
-        </p>
+        <div className="flex flex-col gap-1">
+          <p className="flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400 font-medium">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            {message}
+          </p>
+          {(message.includes("profile") || message.includes("resume")) && (
+            <Link
+              to="/profile"
+              className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300 self-start"
+            >
+              Update Profile &rarr;
+            </Link>
+          )}
+        </div>
       )}
       {message && status === "error" && (
-        <p className="flex items-center gap-1 text-xs text-red-600">
+        <p className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400">
           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
           {message}
           {showRetry && " Click Apply Now to try again."}
